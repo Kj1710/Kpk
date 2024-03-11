@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 mongoose
-  .connect("mongodb+srv://kjha7865:1234@cluster0.mon3qjn.mongodb.net/", {})
+  .connect("mongodb+srv://kjha7865:1234@cluster0.onqxevw.mongodb.net/", {})
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -54,7 +54,7 @@ app.post("/register", async (req, res) => {
   try {
     const { name, email, number } = req.body;
 
-    const newUser = new User({ name, email, password });
+    const newUser = new User({ name, email, number });
 
     await newUser.save();
 

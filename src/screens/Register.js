@@ -16,36 +16,36 @@ import axios from "axios";
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [Number, setNumber] = useState("");
+  const [number, setNumber] = useState("");
   const navigation = useNavigation();
 
   const handleRegister = () => {
     const user = {
       name: name,
       email: email,
-      password: password,
+      number: number,
     };
 
     if (!email.includes("@")) {
-      Alert.alert("Invalid Email", "Please enter a valid email address");
+      Alert.alert("Invalid Email", "Please enter a Valid email address");
       return;
     }
-    if (password.length < 6) {
-      Alert.alert("Invalid Password", "Password should be at least 6 characters long");
+    if (number.length < 10) {
+      Alert.alert("Invalid Number", "Please Give a Correct Number");
       return;
     }
 
     axios
-      .post("http://192.168.29.184:3000/register", user)
+      .post("http://192.168.29.184:8000/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(
           "Registration successful",
           "You have been registered successfully"
         );
-        router.push("/login")
+        navigation.replace("Page");
         setEmail("");
-        setPassword("");
+        setNumber("");
         setName("");
       })
       .catch((error) => {
@@ -60,10 +60,11 @@ const Register = () => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.contentContainer}>
-        <Text style={styles.headerText}>Task Manager | ScaleUp</Text>
+      <Text style={styles.headerText2}>KPK</Text>
+        <Text style={styles.headerText}>Kaushal | Pratham | Kunj </Text>
 
         <View style={styles.formContainer}>
-          <Text style={styles.headerText}>Register to your account</Text>
+          <Text style={styles.headerText1}>Register to your account</Text>
 
           <View style={styles.inputContainer}>
             <MaterialIcons name="person" size={24} color="gray" />
@@ -90,10 +91,10 @@ const Register = () => {
           <View style={styles.inputContainer}>
             <AntDesign name="lock1" size={24} color="gray" />
             <TextInput
-              value={password}
-              onChangeText={(text) => setPassword(text)}
+              value={number}
+              onChangeText={(text) => setNumber(text)}
               style={styles.input}
-              placeholder="Enter your password"
+              placeholder="Enter your Number"
               placeholderTextColor="gray"
               secureTextEntry={true}
             />
@@ -104,10 +105,12 @@ const Register = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => router.push("/login")}
+            onPress={() => navigation.replace("Page")}
             style={styles.loginText}
           >
-            <Text style={styles.signupText}>Already have an account? Sign in</Text>
+            <Text style={styles.signupText}>
+              Don't Want To Register? Click Here
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -136,11 +139,24 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
-  headerText: {
+  headerText1: {
     fontSize: 20,
     fontWeight: "600",
     color: "black",
     marginBottom: 10,
+  },
+  headerText2: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "black",
+    marginBottom: 10,
+  },
+
+  headerText: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "black",
+    marginBottom: 50,
   },
   inputContainer: {
     flexDirection: "row",
@@ -177,6 +193,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 15,
     color: "gray",
+    textDecorationLine: 'underline'
   },
 });
 
