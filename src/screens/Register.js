@@ -8,6 +8,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  Image,
 } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -60,10 +61,11 @@ const Register = () => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.contentContainer}>
-      <Text style={styles.headerText2}>KPK</Text>
-        <Text style={styles.headerText}>Kaushal | Pratham | Kunj </Text>
-
         <View style={styles.formContainer}>
+          <Image
+            style={{ height: 200, width: "100%", resizeMode: "contain" }}
+            source={require("../../assets/Raisa.jpeg")}
+          />
           <Text style={styles.headerText1}>Register to your account</Text>
 
           <View style={styles.inputContainer}>
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   formContainer: {
     width: "100%",
@@ -145,25 +147,13 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 10,
   },
-  headerText2: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "black",
-    marginBottom: 10,
-  },
 
-  headerText: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "black",
-    marginBottom: 50,
-  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.8)",
     borderRadius: 15,
-    marginTop: 15,
+    marginTop: 10,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
@@ -193,7 +183,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 15,
     color: "gray",
-    textDecorationLine: 'underline'
+    textDecorationLine: "underline",
   },
 });
 
