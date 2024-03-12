@@ -5,10 +5,10 @@ import { StyleSheet } from "react-native";
 import Animation from "../screens/Animation";
 import Register from "../screens/Register";
 import Page from "../screens/Page";
-import PrivacyStatement from "../screens/PrivacyStatement";
-import HowToUseVideo from "../screens/HowToUseVideo";
-import License from "../screens/License";
-import RaisePrintechText from "../screens/RaisePrintechText ";
+import PrivacyStatement from "./Drawer/PrivacyStatement";
+import HowToUseVideo from "./Drawer/HowToUseVideo";
+import License from "./Drawer/License";
+import RaisePrintechText from "./Drawer/RaisePrintechText ";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
