@@ -5,10 +5,15 @@ import { StyleSheet } from "react-native";
 import Animation from "../screens/Animation";
 import Register from "../screens/Register";
 import Page from "../screens/Page";
+import Home from "../screens/Home";
 import PrivacyStatement from "./Drawer/PrivacyStatement";
 import HowToUseVideo from "./Drawer/HowToUseVideo";
 import License from "./Drawer/License";
 import RaisePrintechText from "./Drawer/RaisePrintechText ";
+import NewLabel from "../screens/NewLabel";
+import SavedLabel from "../screens/SavedLabel";
+import History from "../screens/History";
+import LocalTemplate from "../screens/LocalTemplate";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -26,8 +31,28 @@ const MainStack = () => {
         component={Register}
         options={{ headerShown: false }}
       />
+        <Stack.Screen
+        name="NewLabel"
+        component={NewLabel}
+        options={{ headerShown: false }}
+      />
+         <Stack.Screen
+        name="SavedLabel"
+        component={SavedLabel}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+        name="History"
+        component={History}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+        name="LocalTemplate"
+        component={LocalTemplate}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
-        name="Page"
+        name="Home"
         component={DrawerNavigator}
         options={{ headerShown: false }}
       />
@@ -37,8 +62,8 @@ const MainStack = () => {
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Page">
-      <Drawer.Screen name="Home" component={Page} />
+    <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Screen name="Raisa Printech" component={Home} />
       <Drawer.Screen
         name="Raise a Printech Text"
         component={RaisePrintechText}

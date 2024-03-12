@@ -44,7 +44,7 @@ const Register = () => {
           "Registration successful",
           "You have been registered successfully"
         );
-        navigation.replace("Page");
+        navigation.replace("Home");
         setEmail("");
         setNumber("");
         setName("");
@@ -107,7 +107,7 @@ const Register = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => navigation.replace("Page")}
+            onPress={() => navigation.replace("Home")}
             style={styles.loginText}
           >
             <Text style={styles.signupText}>
