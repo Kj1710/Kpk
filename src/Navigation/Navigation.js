@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Animation from "../screens/Animation";
 import Register from "../screens/Register";
 import Page from "../screens/Page";
@@ -26,7 +26,6 @@ const MainStack = () => {
         component={Register}
         options={{ headerShown: false }}
       />
-
       <Stack.Screen name="Page" component={Page} />
     </Stack.Navigator>
   );
@@ -34,7 +33,7 @@ const MainStack = () => {
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="MainStack">
+    <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={MainStack} />
       <Drawer.Screen
         name="Raise a Printech Text"
@@ -47,7 +46,16 @@ const DrawerNavigator = () => {
   );
 };
 
-export default DrawerNavigator;
+const RootStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainStack" component={MainStack} />
+      <Stack.Screen name="Drawer" component={DrawerNavigator} />
+    </Stack.Navigator>
+  );
+};
+
+export default RootStack;
 
 const styles = StyleSheet.create({
   container: {
