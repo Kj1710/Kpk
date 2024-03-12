@@ -26,15 +26,19 @@ const MainStack = () => {
         component={Register}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="Page" component={Page} />
+      <Stack.Screen
+        name="Page"
+        component={DrawerNavigator}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={MainStack} />
+    <Drawer.Navigator initialRouteName="Page">
+      <Drawer.Screen name="Home" component={Page} />
       <Drawer.Screen
         name="Raise a Printech Text"
         component={RaisePrintechText}
@@ -50,7 +54,7 @@ const RootStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainStack" component={MainStack} />
-      <Stack.Screen name="Drawer" component={DrawerNavigator} />
+      <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
     </Stack.Navigator>
   );
 };
