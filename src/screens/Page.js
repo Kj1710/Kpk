@@ -14,7 +14,7 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import { BluetoothManager } from "react-native-bluetooth-escpos-printer";
+import { BluetoothManager } from "@react-native-bluetooth-escpos-printer";
 import {
   PERMISSIONS,
   requestMultiple,
@@ -37,6 +37,13 @@ const Page = () => {
       (enabled) => {
         setBleOpend(Boolean(enabled));
         setLoading(false);
+        if (!enabled) {
+          Alert.alert(
+            "Bluetooth Off",
+            "Please turn on your Bluetooth to use this application.",
+            [{ text: "OK" }]
+          );
+        }
       },
       (err) => {
         err;
@@ -95,22 +102,13 @@ const Page = () => {
       );
     }
 
-    console.log(pairedDevices.length);
     if (pairedDevices.length < 1) {
       scan();
-      console.log("scanning...");
     } else {
       const firstDevice = pairedDevices[0];
-      console.log("length  :" + pairedDevices.length);
-      console.log(firstDevice);
       connect(firstDevice);
-
-      // connect(firstDevice);
-      // console.log(pairedDevices.length + "hello");
     }
   }, [pairedDevices]);
-  // deviceFoundEvent,pairedDevices,scan,boundAddress
-  // boundAddress, deviceAlreadPaired, deviceFoundEvent, pairedDevices, scan
 
   const deviceAlreadPaired = useCallback(
     (rsp) => {
@@ -132,31 +130,6 @@ const Page = () => {
     },
     [pairedDevices]
   );
-  // const deviceAlreadPaired = useCallback(
-  //   async rsp => {
-  //     try {
-  //       var ds = null;
-  //       if (typeof rsp.devices === 'object') {
-  //         ds = rsp.devices;
-  //       } else {
-  //         try {
-  //           ds = JSON.parse(rsp.devices);
-  //         } catch (e) {}
-  //       }
-  //       if (ds && ds.length) {
-  //         let pared = pairedDevices;
-  //         if (pared.length < 1) {
-  //           pared = pared.concat(ds || []);
-  //         }
-  //         setPairedDevices(pared);
-  //       }
-  //     } catch (error) {
-  //       // Handle any errors that occurred during the asynchronous operations
-  //       console.error(error);
-  //     }
-  //   },
-  //   [pairedDevices],
-  // );
 
   const deviceFoundEvent = useCallback(
     (rsp) => {
@@ -186,22 +159,6 @@ const Page = () => {
     },
     [foundDs]
   );
-
-  // const connect = (row) => {
-  //   setLoading(true);
-  //   BluetoothManager.connect(row.address).then(
-  //     (s) => {
-  //       setLoading(false);
-  //       setBoundAddress(row.address);
-  //       setName(row.name || "UNKNOWN");
-  //       console.log("Connected to device:", row.name);
-  //     },
-  //     (e) => {
-  //       setLoading(false);
-  //       alert(e);
-  //     }
-  //   );
-  // };
 
   const connect = async (row) => {
     try {
@@ -236,10 +193,9 @@ const Page = () => {
     setLoading(true);
     BluetoothManager.scanDevices().then(
       (s) => {
-        // const pairedDevices = s.paired;
         var found = s.found;
         try {
-          found = JSON.parse(found); //@FIX_it: the parse action too weired..
+          found = JSON.parse(found);
         } catch (e) {
           //ignore
         }
