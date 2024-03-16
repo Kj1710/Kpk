@@ -10,10 +10,27 @@ const mmToDp = (mm) => {
   return mm * ratio / 25.4; // Convert mm to dp
 };
 
+const labelSizes = [
+  { size: "57*70 mm", labels: 100 },
+  { size: "57*40 mm", labels: 160 },
+  { size: "57*30 mm", labels: 200 },
+  { size: "57*20 mm", labels: 300 },
+  { size: "57*10 mm", labels: 550 },
+  { size: "50*50 mm", labels: 130 },
+  { size: "40*70 mm", labels: 100 },
+  { size: "40*60 mm", labels: 100 },
+  { size: "40*40 mm", labels: 100 },
+  { size: "40*30 mm", labels: 200 },
+  { size: "40*20 mm", labels: 300 },
+  { size: "30*40 mm", labels: 160 },
+  { size: "30*50 mm", labels: 130 }
+];
+
 const NewLabel = () => {
   const [contentType, setContentType] = useState(null);
   const [sectionWidth, setSectionWidth] = useState(mmToDp(48)); // Convert mm to dp
   const [sectionHeight, setSectionHeight] = useState(mmToDp(30)); // Convert mm to dp
+  const [selectedSize, setSelectedSize] = useState(labelSizes[0].size);
 
   const renderContent = () => {
     switch (contentType) {
@@ -22,31 +39,29 @@ const NewLabel = () => {
       case 'Barcode':
         return <Barcode value="Your Barcode Data" format="CODE128" width={300} height={100} />;
       default:
-        return <View style={[styles.whiteScreen, { width: mmToDp(48), height: mmToDp(30) }]}></View>;
+        return <View style={[styles.whiteScreen, { width: sectionWidth, height: sectionHeight }]}></View>;
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionText}>First Section</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => console.log("Save button pressed")}>
-            <FontAwesome5 name="save" size={20} color="white" />
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => setContentType('QR Code')}>
-            <FontAwesome5 name="qrcode" size={20} color="white" />
-            <Text style={styles.buttonText}>QR Code</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => setContentType('Barcode')}>
-            <FontAwesome5 name="barcode" size={20} color="white" />
-            <Text style={styles.buttonText}>Barcode</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => console.log("Reset button pressed")}>
-            <FontAwesome5 name="undo" size={20} color="white" />
-            <Text style={styles.buttonText}>Reset</Text>
-          </TouchableOpacity>
+        <Text style={styles.sectionText}>Select Label Size</Text>
+        <View style={styles.labelButtons}>
+          {labelSizes.map(({ size, labels }, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.button, selectedSize === size && styles.selectedButton]}
+              onPress={() => {
+                setSelectedSize(size);
+                const [width, height] = size.split('*').map(Number);
+                setSectionWidth(mmToDp(width));
+                setSectionHeight(mmToDp(height));
+              }}
+            >
+              <Text style={styles.buttonText}>{size} - {labels} labels</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
       <View style={[styles.section, styles.sectionEven]}>
@@ -84,6 +99,20 @@ const NewLabel = () => {
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => setContentType('QR Code')}>
+          <FontAwesome5 name="qrcode" size={20} color="white" />
+          <Text style={styles.buttonText}>QR Code</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => setContentType('Barcode')}>
+          <FontAwesome5 name="barcode" size={20} color="white" />
+          <Text style={styles.buttonText}>Barcode</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => console.log("Reset button pressed")}>
+          <FontAwesome5 name="undo" size={20} color="white" />
+          <Text style={styles.buttonText}>Reset</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -107,9 +136,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 18,
   },
+  labelButtons: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 10,
+  },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginTop: 10,
   },
   button: {
@@ -119,6 +153,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  selectedButton: {
+    backgroundColor: "#0056b3",
   },
   buttonText: {
     color: "white",
@@ -148,6 +186,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 10,
+    alignSelf: "center",
   },
 });
 
