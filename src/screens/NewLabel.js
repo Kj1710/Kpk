@@ -1,14 +1,154 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState } from "react";
+import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, PixelRatio } from "react-native";
+import { FontAwesome5 } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
+import Barcode from 'react-native-barcode-builder';
+import Draggable from "react-native-draggable";
+
+const mmToDp = (mm) => {
+  const ratio = PixelRatio.get();
+  return mm * ratio / 25.4; // Convert mm to dp
+};
 
 const NewLabel = () => {
+  const [contentType, setContentType] = useState(null);
+  const [sectionWidth, setSectionWidth] = useState(mmToDp(48)); // Convert mm to dp
+  const [sectionHeight, setSectionHeight] = useState(mmToDp(30)); // Convert mm to dp
+
+  const renderContent = () => {
+    switch (contentType) {
+      case 'QR Code':
+        return <QRCode value="Your QR Code Data" size={100} />;
+      case 'Barcode':
+        return <Barcode value="Your Barcode Data" format="CODE128" width={300} height={100} />;
+      default:
+        return <View style={[styles.whiteScreen, { width: mmToDp(48), height: mmToDp(30) }]}></View>;
+    }
+  };
+
   return (
-    <View>
-      <Text>NewLabel</Text>
-    </View>
-  )
-}
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.sectionText}>First Section</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => console.log("Save button pressed")}>
+            <FontAwesome5 name="save" size={20} color="white" />
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => setContentType('QR Code')}>
+            <FontAwesome5 name="qrcode" size={20} color="white" />
+            <Text style={styles.buttonText}>QR Code</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => setContentType('Barcode')}>
+            <FontAwesome5 name="barcode" size={20} color="white" />
+            <Text style={styles.buttonText}>Barcode</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => console.log("Reset button pressed")}>
+            <FontAwesome5 name="undo" size={20} color="white" />
+            <Text style={styles.buttonText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={[styles.section, styles.sectionEven]}>
+        <Text style={styles.sectionText}>Second Section</Text>
+        <Draggable
+          renderShape='rectangle'
+          onDragRelease={(event) => {
+            setSectionWidth(event.nativeEvent.layout.width);
+            setSectionHeight(event.nativeEvent.layout.height);
+          }}
+        >
+          <View style={{ width: sectionWidth, height: sectionHeight, borderWidth: 1, borderColor: 'black', justifyContent: 'center', alignItems: 'center' }}>
+            {renderContent()}
+          </View>
+        </Draggable>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionText}>Third Section</Text>
+        <View style={styles.buttonContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={Math.round(sectionWidth * 25.4 / PixelRatio.get()).toString()} // Convert dp to mm
+            onChangeText={(text) => setSectionWidth(mmToDp(parseInt(text)))} // Convert mm to dp
+          />
+          <Text style={styles.dimensionText}>Width (mm):</Text>
+          <TextInput
+            style={styles.textInput}
+            value={Math.round(sectionHeight * 25.4 / PixelRatio.get()).toString()} // Convert dp to mm
+            onChangeText={(text) => setSectionHeight(mmToDp(parseInt(text)))} // Convert mm to dp
+          />
+          <Text style={styles.dimensionText}>Height (mm):</Text>
+        </View>
+        <TouchableOpacity style={styles.saveButton} onPress={() => console.log("Save button pressed")}>
+          <FontAwesome5 name="save" size={20} color="white" />
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+};
 
-export default NewLabel
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    paddingVertical: 20,
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  sectionEven: {
+    backgroundColor: "#f9f9f9",
+  },
+  sectionText: {
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontSize: 18,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: "#007bff",
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 5,
+    fontSize: 16,
+  },
+  whiteScreen: {
+    backgroundColor: "#fff",
+  },
+  textInput: {
+    width: 80,
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  dimensionText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: "#007bff",
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+});
 
-const styles = StyleSheet.create({})
+export default NewLabel;

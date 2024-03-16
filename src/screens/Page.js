@@ -14,7 +14,7 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import { BluetoothManager } from "@react-native-bluetooth-escpos-printer";
+import { BluetoothManager } from "react-native-bluetooth-escpos-printer";
 import {
   PERMISSIONS,
   requestMultiple,
