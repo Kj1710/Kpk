@@ -28,7 +28,7 @@ const Home = () => {
     const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("NewLabel")}>
+      <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("NewLabel1")}>
         <Text style={styles.buttonText}>New Label</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("SavedLabel")}>

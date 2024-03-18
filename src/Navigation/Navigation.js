@@ -10,10 +10,12 @@ import PrivacyStatement from "./Drawer/PrivacyStatement";
 import HowToUseVideo from "./Drawer/HowToUseVideo";
 import License from "./Drawer/License";
 import RaisePrintechText from "./Drawer/RaisePrintechText ";
-import NewLabel from "../screens/NewLabel";
+import NewLabel1 from "../screens/NewLabel1";
 import SavedLabel from "../screens/SavedLabel";
 import History from "../screens/History";
 import LocalTemplate from "../screens/LocalTemplate";
+import NewLabel2 from "../screens/NewLabel2";
+import NewLabe1 from "../screens/NewLabel1";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -32,8 +34,13 @@ const MainStack = () => {
         options={{ headerShown: false }}
       />
         <Stack.Screen
-        name="NewLabel"
-        component={NewLabel}
+        name="NewLabel1"
+        component={NewLabe1}
+        options={{ headerShown: false }}
+      />
+        <Stack.Screen
+        name="NewLabel2"
+        component={NewLabel2}
         options={{ headerShown: false }}
       />
          <Stack.Screen
