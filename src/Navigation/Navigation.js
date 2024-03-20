@@ -16,6 +16,7 @@ import History from "../screens/History";
 import LocalTemplate from "../screens/LocalTemplate";
 import NewLabel2 from "../screens/NewLabel2";
 import NewLabe1 from "../screens/NewLabel1";
+import SamplePrint from "../screens/SamplePrint";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,6 +37,16 @@ const MainStack = () => {
         <Stack.Screen
         name="NewLabel1"
         component={NewLabe1}
+        options={{ headerShown: false }}
+      />
+         <Stack.Screen
+        name="SamplePrint"
+        component={SamplePrint}
+        options={{ headerShown: false }}
+      />
+         <Stack.Screen
+        name="Page"
+        component={Page}
         options={{ headerShown: false }}
       />
         <Stack.Screen

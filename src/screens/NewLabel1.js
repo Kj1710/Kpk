@@ -22,7 +22,7 @@ const NewLabel1 = () => {
   const navigation = useNavigation();
 
   const handleSizeSelection = (size) => {
-    navigation.navigate('NewLabel2', { selectedSize: size });
+    navigation.navigate('Page', { selectedSize: size });
   };
 
   return (
