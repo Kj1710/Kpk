@@ -3,9 +3,9 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 
 const PrintQRCode = () => {
-  const qrCodeData = "Your QR Code Data";
-  const qrCodeSize = 200; // Adjust size as needed
-  // Error correction level
+  const qrCodeData = "https://github.com/Kj1710";
+  const qrCodeSize = 300;
+  
 
   const printQRCode = async () => {
     try {
