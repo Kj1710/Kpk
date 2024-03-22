@@ -24,7 +24,7 @@ import ItemList from "./ItemList";
 import SamplePrint from "./SamplePrint";
 import { styles } from "./styles";
 
-const Page = () => {
+const Page = ({getWhiteboardContent}) => {
   const [pairedDevices, setPairedDevices] = useState([]);
   const [foundDs, setFoundDs] = useState([]);
   const [bleOpend, setBleOpend] = useState(false);
@@ -130,6 +130,26 @@ const Page = () => {
     },
     [pairedDevices]
   );
+
+  const handlePrintWhiteboardContent = async () => {
+    try {
+      const whiteboardContent = getWhiteboardContent();
+      const formattedContent = formatWhiteboardContent(whiteboardContent); // Format content as needed for printing
+      await BluetoothManager.print(formattedContent); // Print the formatted content
+      console.log("Printing whiteboard content:", formattedContent);
+    } catch (error) {
+      console.error("Error printing whiteboard content:", error);
+    }
+  };
+  const formatWhiteboardContent = (content) => {
+    // Format the whiteboard content here as needed for printing
+    // For example, you might convert the React elements to a string representation
+    const formattedContent = content.map(element => {
+      return element.props.children.toString(); // Convert each element to a string
+    }).join('\n'); // Join elements with newline character for printing
+    return formattedContent;
+  };
+
 
   const deviceFoundEvent = useCallback(
     (rsp) => {

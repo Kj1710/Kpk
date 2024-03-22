@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TextInput, Button, Dimensions } from "react-native";
 import Draggable from "react-native-draggable";
+import QRCode from "react-native-qrcode-svg";
+import Svg, { Rect } from "react-native-svg";
+import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+import Page from "./Page";
 
 const NewLabel2 = ({ route }) => {
   const { selectedSize } = route.params;
@@ -24,7 +28,6 @@ const NewLabel2 = ({ route }) => {
     setZoomFactor(calculatedZoomFactor);
   }, []);
 
-  // Check for invalid size format
   if (isNaN(width) || isNaN(height)) {
     return (
       <View style={styles.container}>
@@ -36,58 +39,64 @@ const NewLabel2 = ({ route }) => {
   const adjustedWidth = width * zoomFactor;
   const adjustedHeight = height * zoomFactor;
 
-  const handleAddText = () => {
-    const newTextElement = (
-      <Draggable
-        key={elements.length}
-        x={adjustedWidth / 2}
-        y={adjustedHeight / 2}
-        minX={0}
-        minY={0}
-        maxX={adjustedWidth}
-        maxY={adjustedHeight}
-        style={styles.draggable}
-      >
-        <TextInput placeholder="Type here" style={styles.textInput} />
-      </Draggable>
-    );
-    setElements([...elements, newTextElement]);
-  };
-
-  const handleAddQRCode = () => {
-    const newQRCodeElement = (
-      <Draggable
-        key={elements.length}
-        x={adjustedWidth / 2}
-        y={adjustedHeight / 2}
-        minX={0}
-        minY={0}
-        maxX={adjustedWidth}
-        maxY={adjustedHeight}
-        style={styles.draggable}
-      >
-        <Text>QR Code</Text>
-      </Draggable>
-    );
-    setElements([...elements, newQRCodeElement]);
-  };
-
-  const handleAddBarcode = () => {
-    const newBarcodeElement = (
-      <Draggable
-        key={elements.length}
-        x={adjustedWidth / 2}
-        y={adjustedHeight / 2}
-        minX={0}
-        minY={0}
-        maxX={adjustedWidth}
-        maxY={adjustedHeight}
-        style={styles.draggable}
-      >
-        <Text>Barcode</Text>
-      </Draggable>
-    );
-    setElements([...elements, newBarcodeElement]);
+  const handleAddElement = (elementType) => {
+    let newElement;
+    switch (elementType) {
+      case "text":
+        newElement = (
+          <Draggable
+            key={elements.length}
+            x={adjustedWidth / 2}
+            y={adjustedHeight / 2}
+            minX={0}
+            minY={0}
+            maxX={adjustedWidth}
+            maxY={adjustedHeight}
+            style={styles.draggable}
+          >
+            <TextInput placeholder="Type here" style={styles.textInput} />
+          </Draggable>
+        );
+        break;
+      case "qrCode":
+        newElement = (
+          <Draggable
+            key={elements.length}
+            x={adjustedWidth / 2}
+            y={adjustedHeight / 2}
+            minX={0}
+            minY={0}
+            maxX={adjustedWidth}
+            maxY={adjustedHeight}
+            style={styles.draggable}
+          >
+            <QRCode value="Your QR Code Data" size={100} />
+          </Draggable>
+        );
+        break;
+      case "barcode":
+        newElement = (
+          <Draggable
+            key={elements.length}
+            x={adjustedWidth / 2}
+            y={adjustedHeight / 2}
+            minX={0}
+            minY={0}
+            maxX={adjustedWidth}
+            maxY={adjustedHeight}
+            style={styles.draggable}
+          >
+            <Svg height="100" width="200">
+              <Rect x="0" y="0" width="200" height="100" fill="white" />
+              <Rect x="10" y="10" width="180" height="80" fill="black" />
+            </Svg>
+          </Draggable>
+        );
+        break;
+      default:
+        return;
+    }
+    setElements([...elements, newElement]);
   };
 
   const handleReset = () => {
@@ -99,18 +108,54 @@ const NewLabel2 = ({ route }) => {
     console.log("Label saved");
   };
 
-  const handlePrint = () => {
-    // Logic to print label
-    console.log("Label printed");
+  const handlePrintWhiteboardContent = async () => {
+    try {
+      const whiteboardContent = elements.map((element) => ({
+        elementType: element.props.elementType,
+        props: element.props,
+      }));
+      console.log("for k aake");
+
+      for (const element of whiteboardContent) {
+        console.log("for k aadar");
+        if (element.elementType === "text") {
+          console.log("text k aadar");
+          await BluetoothEscposPrinter.printText(
+            element.props.children,
+            1,
+            element.props.fontSize || 24,
+            element.props.fontStyle || 0
+          );
+        } else if (element.elementType === "qrCode") {
+          await BluetoothEscposPrinter.printQRCode(
+            element.props.value,
+            element.props.size || 100,
+            element.props.errorCorrectionLevel || "L"
+          );
+        } else if (element.elementType === "barcode") {
+          await BluetoothEscposPrinter.printerBarcode(
+            "Barcode Data", // Placeholder data
+            BluetoothEscposPrinter.BARCODE_TYPE.CODE128,
+            element.props.width || 2,
+            element.props.height || 100,
+            BluetoothEscposPrinter.BARCODE_TEXT_POSITION.BELOW
+          );
+        }
+      }
+
+      console.log("Printing whiteboard content:", whiteboardContent);
+    } catch (error) {
+      console.error("Error printing whiteboard content:", error);
+    }
   };
 
   return (
     <View style={styles.container}>
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <Button title="Add Text" onPress={handleAddText} />
-        <Button title="Add QR Code" onPress={handleAddQRCode} />
-        <Button title="Add Barcode" onPress={handleAddBarcode} />
+        <Button title="Add Text" onPress={() => handleAddElement("text")} />
+        <Button title="Add QR Code" onPress={() => handleAddElement("qrCode")} />
+        <Button title="Add Barcode" onPress={() => handleAddElement("barcode")} />
         <Button title="Reset" onPress={handleReset} />
       </View>
       {/* Whiteboard container */}
@@ -124,7 +169,7 @@ const NewLabel2 = ({ route }) => {
       {/* Save and Print buttons */}
       <View style={styles.savePrintContainer}>
         <Button title="Save" onPress={handleSave} />
-        <Button title="Print" onPress={handlePrint} />
+        <Button title="Print" onPress={handlePrintWhiteboardContent} />
       </View>
     </View>
   );
@@ -140,15 +185,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 10,
   },
-  heading: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
   whiteboardContainer: {
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 5,
-    overflow: "hidden", // Ensure elements don't overflow the container
+    overflow: "hidden",
   },
   whiteboard: {
     backgroundColor: "white",
