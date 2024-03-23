@@ -53,6 +53,7 @@ const NewLabel2 = ({ route }) => {
             maxX={adjustedWidth}
             maxY={adjustedHeight}
             style={styles.draggable}
+            elementType="text"
           >
             <TextInput placeholder="Type here" style={styles.textInput} />
           </Draggable>
@@ -69,6 +70,7 @@ const NewLabel2 = ({ route }) => {
             maxX={adjustedWidth}
             maxY={adjustedHeight}
             style={styles.draggable}
+            elementType="qrCode"
           >
             <QRCode value="Your QR Code Data" size={100} />
           </Draggable>
@@ -85,6 +87,7 @@ const NewLabel2 = ({ route }) => {
             maxX={adjustedWidth}
             maxY={adjustedHeight}
             style={styles.draggable}
+            elementType="barcode"
           >
             <Svg height="100" width="200">
               <Rect x="0" y="0" width="200" height="100" fill="white" />
@@ -133,7 +136,7 @@ const NewLabel2 = ({ route }) => {
             element.props.errorCorrectionLevel || "L"
           );
         } else if (element.elementType === "barcode") {
-          await BluetoothEscposPrinter.printerBarcode(
+          await BluetoothEscposPrinter.printBarCode(
             "Barcode Data", // Placeholder data
             BluetoothEscposPrinter.BARCODE_TYPE.CODE128,
             element.props.width || 2,
