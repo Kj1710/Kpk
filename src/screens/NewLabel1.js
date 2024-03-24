@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   sizeButton: {
     padding: 10,
     marginBottom: 10,
-    backgroundColor: '#007bff',
+    backgroundColor: 'orange',
     borderRadius: 5,
   },
   sizeButtonText: {

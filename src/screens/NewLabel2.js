@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TextInput, Button, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Button,
+  Dimensions,
+} from "react-native";
 import Draggable from "react-native-draggable";
 import QRCode from "react-native-qrcode-svg";
 import Svg, { Rect } from "react-native-svg";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
-import Page from "./Page";
 
 const NewLabel2 = ({ route }) => {
   const { selectedSize } = route.params;
@@ -16,7 +22,8 @@ const NewLabel2 = ({ route }) => {
   const [zoomFactor, setZoomFactor] = useState(1);
 
   useEffect(() => {
-    const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+    const { width: screenWidth, height: screenHeight } =
+      Dimensions.get("window");
     const marginPercentage = 0.05; // 5%
     const marginWidth = screenWidth * marginPercentage;
     const marginHeight = screenHeight * marginPercentage;
@@ -24,7 +31,10 @@ const NewLabel2 = ({ route }) => {
     const adjustedScreenWidth = screenWidth - marginWidth * 2;
     const adjustedScreenHeight = screenHeight - marginHeight * 2;
 
-    const calculatedZoomFactor = Math.min(adjustedScreenWidth / width, adjustedScreenHeight / height);
+    const calculatedZoomFactor = Math.min(
+      adjustedScreenWidth / width,
+      adjustedScreenHeight / height
+    );
     setZoomFactor(calculatedZoomFactor);
   }, []);
 
@@ -35,19 +45,23 @@ const NewLabel2 = ({ route }) => {
       </View>
     );
   }
+  const BARCODE_TYPE = BluetoothEscposPrinter.BARCODE_TYPE;
 
   const adjustedWidth = width * zoomFactor;
   const adjustedHeight = height * zoomFactor;
 
   const handleAddElement = (elementType) => {
     let newElement;
+    const defaultX = adjustedWidth / 2;
+    const defaultY = adjustedHeight / 2;
+    
     switch (elementType) {
       case "text":
         newElement = (
           <Draggable
             key={elements.length}
-            x={adjustedWidth / 2}
-            y={adjustedHeight / 2}
+            x={defaultX}
+            y={defaultY}
             minX={0}
             minY={0}
             maxX={adjustedWidth}
@@ -63,8 +77,8 @@ const NewLabel2 = ({ route }) => {
         newElement = (
           <Draggable
             key={elements.length}
-            x={adjustedWidth / 2}
-            y={adjustedHeight / 2}
+            x={defaultX}
+            y={defaultY}
             minX={0}
             minY={0}
             maxX={adjustedWidth}
@@ -80,8 +94,8 @@ const NewLabel2 = ({ route }) => {
         newElement = (
           <Draggable
             key={elements.length}
-            x={adjustedWidth / 2}
-            y={adjustedHeight / 2}
+            x={defaultX}
+            y={defaultY}
             minX={0}
             minY={0}
             maxX={adjustedWidth}
@@ -101,6 +115,8 @@ const NewLabel2 = ({ route }) => {
     }
     setElements([...elements, newElement]);
   };
+  
+  
 
   const handleReset = () => {
     setElements([]);
@@ -113,56 +129,74 @@ const NewLabel2 = ({ route }) => {
 
   const handlePrintWhiteboardContent = async () => {
     try {
-      const whiteboardContent = elements.map((element) => ({
-        elementType: element.props.elementType,
-        props: element.props,
-      }));
-      console.log("for k aake");
-
-      for (const element of whiteboardContent) {
-        console.log("for k aadar");
-        if (element.elementType === "text") {
-          console.log("text k aadar");
-          await BluetoothEscposPrinter.printText(
-            element.props.children,
-            1,
-            element.props.fontSize || 24,
-            element.props.fontStyle || 0
-          );
-        } else if (element.elementType === "qrCode") {
+      for (const element of elements) {
+        const elementType = element.props.elementType;
+        const props = element.props;
+        
+        if (!elementType) {
+          console.warn("Skipping element with undefined elementType:", element);
+          continue;
+        }
+  
+        if (elementType === "qrCode") {
+          console.log("Printing QR code element");
           await BluetoothEscposPrinter.printQRCode(
-            element.props.value,
-            element.props.size || 100,
-            element.props.errorCorrectionLevel || "L"
+            "Your QR Code Data",
+            props.size || 100,
+            2
           );
-        } else if (element.elementType === "barcode") {
+        } else if (elementType === "barcode") {
+          console.log("Printing Barcode Element");
           await BluetoothEscposPrinter.printBarCode(
-            "Barcode Data", // Placeholder data
-            BluetoothEscposPrinter.BARCODE_TYPE.CODE128,
-            element.props.width || 2,
-            element.props.height || 100,
-            BluetoothEscposPrinter.BARCODE_TEXT_POSITION.BELOW
+            "Barcode Data",
+            128,
+            3,
+            120,
+            0,
+            2
           );
+        } else if (elementType === "text") {
+          console.log("Printing Text Element");
+          await BluetoothEscposPrinter.printText(
+            props.children,
+            1,
+            props.fontSize || 24,
+            props.fontStyle || 0
+          );
+        } else {
+          console.warn("Unsupported element type:", elementType);
         }
       }
-
-      console.log("Printing whiteboard content:", whiteboardContent);
+  
+      console.log("Printing whiteboard content:", elements);
     } catch (error) {
       console.error("Error printing whiteboard content:", error);
     }
   };
+  
 
   return (
     <View style={styles.container}>
       {/* Buttons */}
       <View style={styles.buttonContainer}>
         <Button title="Add Text" onPress={() => handleAddElement("text")} />
-        <Button title="Add QR Code" onPress={() => handleAddElement("qrCode")} />
-        <Button title="Add Barcode" onPress={() => handleAddElement("barcode")} />
+        <Button
+          title="Add QR Code"
+          onPress={() => handleAddElement("qrCode")}
+        />
+        <Button
+          title="Add Barcode"
+          onPress={() => handleAddElement("barcode")}
+        />
         <Button title="Reset" onPress={handleReset} />
       </View>
       {/* Whiteboard container */}
-      <View style={[styles.whiteboardContainer, { width: adjustedWidth, height: adjustedHeight }]}>
+      <View
+        style={[
+          styles.whiteboardContainer,
+          { width: adjustedWidth, height: adjustedHeight },
+        ]}
+      >
         <View style={styles.whiteboard}>
           {elements.map((element, index) => (
             <React.Fragment key={index}>{element}</React.Fragment>

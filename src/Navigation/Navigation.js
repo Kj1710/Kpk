@@ -81,12 +81,12 @@ const MainStack = () => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Raisa Printech" component={Home} />
+      <Drawer.Screen name="Main" component={Home} />
       <Drawer.Screen
-        name="Raise a Printech Text"
+        name="About Us"
         component={RaisePrintechText}
       />
-      <Drawer.Screen name="How to Use Video" component={HowToUseVideo} />
+      <Drawer.Screen name="BlueTooth Connection" component={HowToUseVideo} />
       <Drawer.Screen name="License" component={License} />
       <Drawer.Screen name="Privacy Statement" component={PrivacyStatement} />
     </Drawer.Navigator>
