@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const Register = () => {
@@ -19,6 +20,21 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const navigation = useNavigation();
+
+  useEffect(() => {
+    checkIfUserExists();
+  }, []);
+
+  const checkIfUserExists = async () => {
+    try {
+      const userExists = await AsyncStorage.getItem("user");
+      if (userExists) {
+        navigation.replace("Home");
+      }
+    } catch (error) {
+      console.log("Error checking user:", error);
+    }
+  };
 
   const handleRegister = () => {
     const user = {
@@ -45,6 +61,7 @@ const Register = () => {
           "You have been registered successfully"
         );
         navigation.replace("Home");
+        AsyncStorage.setItem("user", JSON.stringify(user)); // Save user data to AsyncStorage
         setEmail("");
         setNumber("");
         setName("");
@@ -107,7 +124,12 @@ const Register = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => navigation.replace("Home")}
+            onPress={() => {
+              AsyncStorage.setItem("user", JSON.stringify({ name, email, number }));
+              console.log("User" , user)
+              navigation.replace("Home");
+              
+            }}
             style={styles.loginText}
           >
             <Text style={styles.signupText}>
