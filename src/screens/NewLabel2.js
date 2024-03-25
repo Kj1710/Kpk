@@ -11,13 +11,14 @@ import Draggable from "react-native-draggable";
 import QRCode from "react-native-qrcode-svg";
 import Svg, { Rect } from "react-native-svg";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+import Barcode from "@kichiyaki/react-native-barcode-generator";
 
 const NewLabel2 = ({ route }) => {
   const { selectedSize } = route.params;
   const [widthStr, heightStr] = selectedSize.split("*");
   const width = parseInt(widthStr, 10);
   const height = parseInt(heightStr, 10);
-
+  const [barcodeValue, setBarcodeValue] = useState("");
   const [elements, setElements] = useState([]);
   const [zoomFactor, setZoomFactor] = useState(1);
 
@@ -54,7 +55,7 @@ const NewLabel2 = ({ route }) => {
     let newElement;
     const defaultX = adjustedWidth / 2;
     const defaultY = adjustedHeight / 2;
-    
+
     switch (elementType) {
       case "text":
         newElement = (
@@ -89,6 +90,7 @@ const NewLabel2 = ({ route }) => {
             <QRCode value="Your QR Code Data" size={100} />
           </Draggable>
         );
+        setElements([...elements, newElement]);
         break;
       case "barcode":
         newElement = (
@@ -103,27 +105,30 @@ const NewLabel2 = ({ route }) => {
             style={styles.draggable}
             elementType="barcode"
           >
-            <Svg height="100" width="200">
-              <Rect x="0" y="0" width="200" height="100" fill="white" />
-              <Rect x="10" y="10" width="180" height="80" fill="black" />
-            </Svg>
+            <Barcode
+              value="123456789"
+              format="CODE128"
+              width={1.5}
+              height={50}
+              lineColor="black"
+              background="white"
+            />
           </Draggable>
         );
+        setElements([...elements, newElement]);
         break;
       default:
         return;
     }
     setElements([...elements, newElement]);
   };
-  
-  
 
   const handleReset = () => {
     setElements([]);
   };
 
   const handleSave = () => {
-    // Logic to save label
+   
     console.log("Label saved");
   };
 
@@ -132,12 +137,12 @@ const NewLabel2 = ({ route }) => {
       for (const element of elements) {
         const elementType = element.props.elementType;
         const props = element.props;
-        
+
         if (!elementType) {
           console.warn("Skipping element with undefined elementType:", element);
           continue;
         }
-  
+
         if (elementType === "qrCode") {
           console.log("Printing QR code element");
           await BluetoothEscposPrinter.printQRCode(
@@ -167,13 +172,12 @@ const NewLabel2 = ({ route }) => {
           console.warn("Unsupported element type:", elementType);
         }
       }
-  
+
       console.log("Printing whiteboard content:", elements);
     } catch (error) {
       console.error("Error printing whiteboard content:", error);
     }
   };
-  
 
   return (
     <View style={styles.container}>
