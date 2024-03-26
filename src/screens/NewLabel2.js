@@ -25,7 +25,7 @@ const NewLabel2 = ({ route }) => {
   useEffect(() => {
     const { width: screenWidth, height: screenHeight } =
       Dimensions.get("window");
-    const marginPercentage = 0.05; // 5%
+    const marginPercentage = 0.05; 
     const marginWidth = screenWidth * marginPercentage;
     const marginHeight = screenHeight * marginPercentage;
 

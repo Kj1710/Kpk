@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native'; // Import Dimensions
 import { useNavigation } from '@react-navigation/native';
 
 const labelSizes = [
@@ -28,11 +28,14 @@ const NewLabel1 = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Select Label Size</Text>
-      {labelSizes.map(({ size }, index) => (
-        <TouchableOpacity key={index} style={styles.sizeButton} onPress={() => handleSizeSelection(size)}>
-          <Text style={styles.sizeButtonText}>{size}</Text>
-        </TouchableOpacity>
-      ))}
+      {/* Wrap buttons in a View to display them in two columns */}
+      <View style={styles.buttonsContainer}>
+        {labelSizes.map(({ size }, index) => (
+          <TouchableOpacity key={index} style={styles.sizeButton} onPress={() => handleSizeSelection(size)}>
+            <Text style={styles.sizeButtonText}>{size}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };
@@ -47,15 +50,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 20,
   },
+  buttonsContainer: {
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'center',
+  },
   sizeButton: {
+    width: Dimensions.get('window').width / 2 - 20,
     padding: 10,
     marginBottom: 10,
+    marginRight: 10, 
     backgroundColor: 'orange',
     borderRadius: 5,
   },
   sizeButtonText: {
     color: 'white',
     fontSize: 18,
+    textAlign: 'center', // Center the text inside the button
   },
 });
 
