@@ -9,23 +9,21 @@ import {
 } from "react-native";
 import Draggable from "react-native-draggable";
 import QRCode from "react-native-qrcode-svg";
-import Svg, { Rect } from "react-native-svg";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import Barcode from "@kichiyaki/react-native-barcode-generator";
 
 const NewLabel2 = ({ route }) => {
   const { selectedSize } = route.params;
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const [widthStr, heightStr] = selectedSize.split("*");
   const width = parseInt(widthStr, 10);
   const height = parseInt(heightStr, 10);
-  const [barcodeValue, setBarcodeValue] = useState("");
   const [elements, setElements] = useState([]);
   const [zoomFactor, setZoomFactor] = useState(1);
+  const [textInputValue, setTextInputValue] = useState("");
 
   useEffect(() => {
-    const { width: screenWidth, height: screenHeight } =
-      Dimensions.get("window");
-    const marginPercentage = 0.05; 
+    const marginPercentage = 0.05;
     const marginWidth = screenWidth * marginPercentage;
     const marginHeight = screenHeight * marginPercentage;
 
@@ -46,15 +44,14 @@ const NewLabel2 = ({ route }) => {
       </View>
     );
   }
-  const BARCODE_TYPE = BluetoothEscposPrinter.BARCODE_TYPE;
 
   const adjustedWidth = width * zoomFactor;
   const adjustedHeight = height * zoomFactor;
 
   const handleAddElement = (elementType) => {
-    let newElement;
     const defaultX = adjustedWidth / 2;
     const defaultY = adjustedHeight / 2;
+    let newElement;
 
     switch (elementType) {
       case "text":
@@ -70,7 +67,11 @@ const NewLabel2 = ({ route }) => {
             style={styles.draggable}
             elementType="text"
           >
-            <TextInput placeholder="Type here" style={styles.textInput} />
+            <TextInput
+              placeholder="Type here"
+              style={styles.textInput}
+              onChangeText={(text) => setTextInputValue(text)}
+            />
           </Draggable>
         );
         break;
@@ -90,7 +91,6 @@ const NewLabel2 = ({ route }) => {
             <QRCode value="Your QR Code Data" size={100} />
           </Draggable>
         );
-        setElements([...elements, newElement]);
         break;
       case "barcode":
         newElement = (
@@ -115,7 +115,6 @@ const NewLabel2 = ({ route }) => {
             />
           </Draggable>
         );
-        setElements([...elements, newElement]);
         break;
       default:
         return;
@@ -128,54 +127,20 @@ const NewLabel2 = ({ route }) => {
   };
 
   const handleSave = () => {
-   
     console.log("Label saved");
   };
 
   const handlePrintWhiteboardContent = async () => {
     try {
-      for (const element of elements) {
-        const elementType = element.props.elementType;
-        const props = element.props;
-
-        if (!elementType) {
-          console.warn("Skipping element with undefined elementType:", element);
-          continue;
-        }
-
-        if (elementType === "qrCode") {
-          console.log("Printing QR code element");
-          await BluetoothEscposPrinter.printQRCode(
-            "Your QR Code Data",
-            props.size || 100,
-            2
-          );
-        } else if (elementType === "barcode") {
-          console.log("Printing Barcode Element");
-          await BluetoothEscposPrinter.printBarCode(
-            "Barcode Data",
-            128,
-            3,
-            120,
-            0,
-            2
-          );
-        } else if (elementType === "text") {
-          console.log("Printing Text Element");
-          await BluetoothEscposPrinter.printText(
-            props.children,
-            1,
-            props.fontSize || 24,
-            props.fontStyle || 0
-          );
-        } else {
-          console.warn("Unsupported element type:", elementType);
-        }
-      }
-
-      console.log("Printing whiteboard content:", elements);
+      await BluetoothEscposPrinter.printText(textInputValue, {
+        encoding: "GBK",
+        codepage: 0,
+        widthtimes: 2,
+        heigthtimes: 2,
+        fonttype: 1,
+      });
     } catch (error) {
-      console.error("Error printing whiteboard content:", error);
+      console.error("Error printing text:", error);
     }
   };
 
