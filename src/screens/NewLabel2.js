@@ -132,15 +132,50 @@ const NewLabel2 = ({ route }) => {
 
   const handlePrintWhiteboardContent = async () => {
     try {
-      await BluetoothEscposPrinter.printText(textInputValue, {
-        encoding: "GBK",
-        codepage: 0,
-        widthtimes: 2,
-        heigthtimes: 2,
-        fonttype: 1,
-      });
+      for (const element of elements) {
+        const elementType = element.props.elementType;
+        const props = element.props;
+
+        if (!elementType) {
+          console.warn("Skipping element with undefined elementType:", element);
+          continue;
+        }
+
+        if (elementType === "qrCode") {
+          console.log("Printing QR code element");
+          await BluetoothEscposPrinter.printQRCode(
+            "https://amzn.eu/d/dsg0rHS",
+            props.size || 100,
+            2
+          );
+        } else if (elementType === "barcode") {
+          console.log("Printing Barcode Element");
+          await BluetoothEscposPrinter.printBarCode(
+            "https://amzn.eu/d/dsg0rHS",
+            128,
+            3,
+            120,
+            0,
+            2
+          );
+        } else if (elementType === "text") {
+          console.log("Printing Text Element");
+
+          await BluetoothEscposPrinter.printText(textInputValue, {
+            encoding: "GBK",
+            codepage: 0,
+            widthtimes: 2,
+            heigthtimes: 2,
+            fonttype: 1,
+          });
+        } else {
+          console.warn("Unsupported element type:", elementType);
+        }
+      }
+
+      console.log("Printing whiteboard content:", elements);
     } catch (error) {
-      console.error("Error printing text:", error);
+      console.error("Error printing whiteboard content:", error);
     }
   };
 
