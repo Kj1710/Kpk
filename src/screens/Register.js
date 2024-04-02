@@ -61,7 +61,7 @@ const Register = () => {
           "You have been registered successfully"
         );
         navigation.replace("Home");
-        AsyncStorage.setItem("user", JSON.stringify(user)); // Save user data to AsyncStorage
+        AsyncStorage.setItem("user", JSON.stringify(user));
         setEmail("");
         setNumber("");
         setName("");
@@ -125,10 +125,12 @@ const Register = () => {
 
           <Pressable
             onPress={() => {
-              AsyncStorage.setItem("user", JSON.stringify({ name, email, number }));
-              console.log("User" , user)
+              AsyncStorage.setItem(
+                "user",
+                JSON.stringify({ name, email, number })
+              );
+              console.log("User", user);
               navigation.replace("Home");
-              
             }}
             style={styles.loginText}
           >

@@ -145,18 +145,18 @@ const NewLabel2 = ({ route }) => {
           console.log("Printing QR code element");
           await BluetoothEscposPrinter.printQRCode(
             "https://amzn.eu/d/dsg0rHS",
-            props.size || 100,
+            props.size || 200,
             2
           );
         } else if (elementType === "barcode") {
           console.log("Printing Barcode Element");
           await BluetoothEscposPrinter.printBarCode(
-            "https://amzn.eu/d/dsg0rHS",
-            128,
-            3,
-            120,
-            0,
-            2
+            "123456789", 
+            128,        
+            3,           
+            120,         
+            0,           
+            2            
           );
         } else if (elementType === "text") {
           console.log("Printing Text Element");
