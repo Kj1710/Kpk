@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
   Text,
-  TextInput,
   Button,
   Dimensions,
+  TextInput,
 } from "react-native";
 import Draggable from "react-native-draggable";
 import QRCode from "react-native-qrcode-svg";
-import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+import ViewShot from "react-native-view-shot";
+import { BluetoothTscPrinter } from "react-native-bluetooth-escpos-printer";
 import Barcode from "@kichiyaki/react-native-barcode-generator";
 
 const NewLabel2 = ({ route }) => {
@@ -20,7 +21,7 @@ const NewLabel2 = ({ route }) => {
   const height = parseInt(heightStr, 10);
   const [elements, setElements] = useState([]);
   const [zoomFactor, setZoomFactor] = useState(1);
-  const [textInputValue, setTextInputValue] = useState("");
+  const viewShotRef = useRef(null); // Reference to the ViewShot component
 
   useEffect(() => {
     const marginPercentage = 0.05;
@@ -67,11 +68,7 @@ const NewLabel2 = ({ route }) => {
             style={styles.draggable}
             elementType="text"
           >
-            <TextInput
-              placeholder="Type here"
-              style={styles.textInput}
-              onChangeText={(text) => setTextInputValue(text)}
-            />
+            <TextInput placeholder="Type here" style={styles.textInput} />
           </Draggable>
         );
         break;
@@ -132,48 +129,19 @@ const NewLabel2 = ({ route }) => {
 
   const handlePrintWhiteboardContent = async () => {
     try {
-      for (const element of elements) {
-        const elementType = element.props.elementType;
-        const props = element.props;
-
-        if (!elementType) {
-          console.warn("Skipping element with undefined elementType:", element);
-          continue;
-        }
-
-        if (elementType === "qrCode") {
-          console.log("Printing QR code element");
-          await BluetoothEscposPrinter.printQRCode(
-            "https://amzn.eu/d/dsg0rHS",
-            props.size || 200,
-            2
-          );
-        } else if (elementType === "barcode") {
-          console.log("Printing Barcode Element");
-          await BluetoothEscposPrinter.printBarCode(
-            "123456789", 
-            128,        
-            3,           
-            120,         
-            0,           
-            2            
-          );
-        } else if (elementType === "text") {
-          console.log("Printing Text Element");
-
-          await BluetoothEscposPrinter.printText(textInputValue, {
-            encoding: "GBK",
-            codepage: 0,
-            widthtimes: 2,
-            heigthtimes: 2,
-            fonttype: 1,
+      if (viewShotRef.current) {
+        viewShotRef.current.capture().then(async (uri) => {
+          console.log("Image captured:", uri);
+          // Pass the image URI to the printer for printing
+          await BluetoothTscPrinter.printLabel({
+            image: uri,
+            width: adjustedWidth, // Pass the adjusted width
+            height: adjustedHeight, // Pass the adjusted height
           });
-        } else {
-          console.warn("Unsupported element type:", elementType);
-        }
+        });
+      } else {
+        console.error("viewShotRef.current is null");
       }
-
-      console.log("Printing whiteboard content:", elements);
     } catch (error) {
       console.error("Error printing whiteboard content:", error);
     }
@@ -195,22 +163,27 @@ const NewLabel2 = ({ route }) => {
         <Button title="Reset" onPress={handleReset} />
       </View>
       {/* Whiteboard container */}
-      <View
-        style={[
-          styles.whiteboardContainer,
-          { width: adjustedWidth, height: adjustedHeight },
-        ]}
-      >
-        <View style={styles.whiteboard}>
-          {elements.map((element, index) => (
-            <React.Fragment key={index}>{element}</React.Fragment>
-          ))}
-        </View>
+      <View style={styles.whiteboardContainer}>
+        <ViewShot
+          ref={viewShotRef}
+          options={{ format: "jpg", quality: 0.9 }}
+          style={{ width: adjustedWidth, height: adjustedHeight }}
+        >
+          <View style={styles.whiteboard}>
+            {elements.map((element, index) => (
+              <React.Fragment key={index}>{element}</React.Fragment>
+            ))}
+          </View>
+        </ViewShot>
       </View>
       {/* Save and Print buttons */}
       <View style={styles.savePrintContainer}>
         <Button title="Save" onPress={handleSave} />
-        <Button title="Print" onPress={handlePrintWhiteboardContent} />
+        <Button
+          title="Print"
+          onPress={handlePrintWhiteboardContent}
+          disabled={!viewShotRef.current}
+        />
       </View>
     </View>
   );
