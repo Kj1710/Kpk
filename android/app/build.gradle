@@ -146,6 +146,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-bluetooth-escpos-printer')
     implementation project(':react-native-view-shot')
+    implementation project(':react-native-fs')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

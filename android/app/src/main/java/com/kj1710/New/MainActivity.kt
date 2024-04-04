@@ -2,6 +2,7 @@ package com.kj1710.New
 
 import android.os.Build
 import android.os.Bundle
+import com.rnfs.RNFSPackage;  
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

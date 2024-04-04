@@ -12,6 +12,7 @@ import QRCode from "react-native-qrcode-svg";
 import ViewShot from "react-native-view-shot";
 import { BluetoothTscPrinter } from "react-native-bluetooth-escpos-printer";
 import Barcode from "@kichiyaki/react-native-barcode-generator";
+import RNFS from "react-native-fs";
 
 const NewLabel2 = ({ route }) => {
   const { selectedSize } = route.params;
@@ -21,7 +22,7 @@ const NewLabel2 = ({ route }) => {
   const height = parseInt(heightStr, 10);
   const [elements, setElements] = useState([]);
   const [zoomFactor, setZoomFactor] = useState(1);
-  const viewShotRef = useRef(null); // Reference to the ViewShot component
+  const viewShotRef = useRef(null); 
 
   useEffect(() => {
     const marginPercentage = 0.05;
@@ -127,16 +128,27 @@ const NewLabel2 = ({ route }) => {
     console.log("Label saved");
   };
 
+  const uriToBase64 = async (uri) => {
+    try {
+      const base64Data = await RNFS.readFile(uri, "base64");
+      console.log("Base64Data", base64Data);
+      return base64Data;
+    } catch (error) {
+      console.error("Error converting image URI to Base64:", error);
+      throw error;
+    }
+  };
+
   const handlePrintWhiteboardContent = async () => {
     try {
       if (viewShotRef.current) {
         viewShotRef.current.capture().then(async (uri) => {
           console.log("Image captured:", uri);
-          // Pass the image URI to the printer for printing
+
           await BluetoothTscPrinter.printLabel({
-            image: uri,
-            width: adjustedWidth, // Pass the adjusted width
-            height: adjustedHeight, // Pass the adjusted height
+            image: `file://${uri}`,
+            width: adjustedWidth,
+            height: adjustedHeight,
           });
         });
       } else {
@@ -149,7 +161,7 @@ const NewLabel2 = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Buttons */}
+     
       <View style={styles.buttonContainer}>
         <Button title="Add Text" onPress={() => handleAddElement("text")} />
         <Button
